@@ -18,6 +18,4 @@ svg circle:active{
   stroke: yellow;
 }
 svg .link_line {
-  stroke: rgba(0,0,0,.5);
-  stroke-width: 2;
 }

@@ -60,9 +60,55 @@
         });
 
         // Start with require if you need to execute some js code
-        require(['backbone', 'sam/routers/router', 'splunkjs/ready!'], function(Backbone, Router) {
+        require([
+            'backbone',
+            'underscore',
+            'sam/routers/router',
+            'splunkjs/ready!'], function(Backbone, _, Router) {
             var mainRouter = new Router();
             Backbone.history.start();
+
+            var links = [ {
+                  source: 0,
+                  target: 5,
+                  weigth: Math.round(Math.random() * 10)},
+              {
+                  source: 0,
+                  target: 2,
+                  weigth: Math.round(Math.random() * 10)},
+              {
+                  source: 1,
+                  target: 3,
+                  weigth: Math.round(Math.random() * 10)},
+              {
+                  source: 2,
+                  target: 4,
+                  weigth: Math.round(Math.random() * 10)},
+              {
+                  source: 3,
+                  target: 5,
+                  weigth: Math.round(Math.random() * 10)},
+              {
+                  source: 5,
+                  target: 0,
+                  weigth: Math.round(Math.random() * 10)},
+              {
+                  source: 2,
+                  target: 0,
+                  weigth: Math.round(Math.random() * 10)},
+              {
+                  source: 3,
+                  target: 1,
+                  weigth: Math.round(Math.random() * 10)}
+              ];
+
+            setInterval(function() {
+                _.each(links, function(l) {
+                    l.weigth = Math.round(Math.random() * 10);
+                });
+
+                mainRouter.pageView().updateLinks(links);
+            }, 500);
         });
 
     </script>

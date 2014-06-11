@@ -24,6 +24,8 @@ define(
   });
 
   var lineInterpolate = d3.svg.line().interpolate("basis");
+  var linkColor = d3.interpolateRgb("#BAE4B3", "#006D2C");
+  var linkColorScale = d3.scale.linear().range([0, 1]).domain([0, 10]);
 
   var Nodes = Backbone.Model.extend({
     defaults: {
@@ -125,7 +127,8 @@ define(
       this.get('gPath')
         .datum(this)
         .attr("class", "link_line")
-        .attr("id", this.get('id'));
+        .attr("id", this.get('id'))
+        .attr('stroke', 'red');
 
       this.listenTo(this.get('source'), 'change:cx change:cy', this._drawCurve);
       this.listenTo(this.get('target'), 'change:cx change:cy', this._drawCurve);
@@ -140,6 +143,8 @@ define(
 
     update: function(settings) {
       // Update background, etc
+      this.get('gPath')
+        .attr('stroke', linkColor(linkColorScale(settings.weigth)));
       this._drawCurve();
     },
 
@@ -275,6 +280,12 @@ define(
       return this._model;
     },
 
+    updateLinks: function(links) {
+      _.each(links, _.bind(function(l) {
+        this._nodes.updateLink(l.source, l.target, l);
+      }, this));
+    },
+
     _syncSuccess: function(model) {
       Backbone.history.navigate(model.displayId());
 
@@ -298,45 +309,6 @@ define(
       this._nodes.clear();
       this._nodes.draw();
       this._nodes.load(this.model().get('nodes'));
-
-      // Random data
-      var links = [ {
-          source: 0,
-          target: 5,
-          strength: Math.round(Math.random() * 10)},
-      {
-          source: 0,
-          target: 2,
-          strength: Math.round(Math.random() * 10)},
-      {
-          source: 1,
-          target: 3,
-          strength: Math.round(Math.random() * 10)},
-      {
-          source: 2,
-          target: 4,
-          strength: Math.round(Math.random() * 10)},
-      {
-          source: 3,
-          target: 5,
-          strength: Math.round(Math.random() * 10)},
-      {
-          source: 5,
-          target: 0,
-          strength: Math.round(Math.random() * 10)},
-      {
-          source: 2,
-          target: 0,
-          strength: Math.round(Math.random() * 10)},
-      {
-          source: 3,
-          target: 1,
-          strength: Math.round(Math.random() * 10)}
-      ];
-
-      links.forEach(_.bind(function(line) {
-        this._nodes.updateLink(line.source, line.target, line);
-      }, this));
     }
   });
 
