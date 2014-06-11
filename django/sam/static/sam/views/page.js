@@ -275,6 +275,8 @@ define(
 
         if (!this._model.isNew()){
           this._model.fetch();
+        } else {
+          this._draw();
         }
       }
       return this._model;
