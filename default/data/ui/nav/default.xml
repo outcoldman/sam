@@ -1,0 +1,15 @@
+<!-- Contents of the app bar -->
+<nav>
+    <view name="default" default="true"/>
+    
+    <!-- Standalone menus -->
+    <a href="/dj/redirector/sam/home">Home</a>
+    
+    <!-- Menus containing items -->
+    <!--
+    <collection label="Views">
+        <a href="/dj/redirector/sam/home">Home</a>
+        <a href="/dj/redirector/sam/template_render?template_name=other">Other</a>
+    </collection>
+      -->
+</nav>
