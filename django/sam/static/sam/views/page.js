@@ -95,20 +95,28 @@ define(
     },
 
     save: function(nodes) {
+      var svgWidth = this.get('jsvg').width();
+      var svgHeight = this.get('jsvg').height();
       _.each(this._nodes, function(v, k) {
         nodes.push({
-          cx: v.get('cx'),
-          cy: v.get('cy'),
+          cx: v.get('cx')/svgWidth,
+          cy: v.get('cy')/svgHeight,
           id: v.get('id')
         });
       });
     },
 
     load: function(nodes) {
+      var svgWidth = this.get('jsvg').width();
+      var svgHeight = this.get('jsvg').height();
       if (nodes) {
         _.each(nodes, _.bind(function(v) {
           if (!this._nodes[v.id]) {
-            this.addNode(v.id, v);
+            this.addNode(v.id, {
+              id: v.id,
+              cx: v.cx * svgWidth,
+              cy: v.cy * svgHeight
+            });
           }
         }, this));
       }

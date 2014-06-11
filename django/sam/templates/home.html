@@ -36,7 +36,7 @@
                 managerid="appSearchManager" %}
         </div>
         <div class="row">
-            <svg width="800" height="600" />
+            <svg width="100%" height="600" />
         </div>
         <div class="row">
             <button id="btnSave" class="btn" type="button"><i class="icon-export"></i> Save</button>
@@ -106,13 +106,16 @@
                   weigth: Math.round(Math.random() * 10)}
               ];
 
-            setInterval(function() {
-                _.each(links, function(l) {
-                    l.weigth = Math.round(Math.random() * 10);
-                });
+            setTimeout(function() {
+                setInterval(function() {
+                    _.each(links, function(l) {
+                        l.weigth = Math.round(Math.random() * 10);
+                    });
 
-                mainRouter.pageView().updateLinks(links);
-            }, 500);
+                    mainRouter.pageView().updateLinks(links);
+                }, 500);
+            }, 2000);
+            
         });
 
     </script>
