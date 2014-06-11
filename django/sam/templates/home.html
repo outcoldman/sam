@@ -8,45 +8,62 @@
     <link rel="stylesheet" href="{{STATIC_URL}}{{app_name}}/custom.css" >
 {% endblock css %}
 
+{% block managers %}
+    {% searchmanager 
+        id="appSearchManager" 
+        search="$searchquery$"|token_safe
+        earliest_time="$earlyval$"|token_safe
+        latest_time="$lateval$"|token_safe
+        preview=True 
+        required_field_list="*"
+        autostart=False %}
+{% endblock managers %}
+
 {% block content %}
-    <div>
-        <div class="main-area">
-            <p>
-                This is the home page of your app.
-            </p>
-            <p>
-                You can customize it by editing the template file at:
-                <code>sam/django/sam/templates/home.html</code>
-            </p>
-            <p class="muted">
-                You should also look in the JavaScript console...
-            </p>
+    <div id="content">
+        <div class="row" id="searchPanel">
+            {% searchbar
+                id="appSearchBar" 
+                managerid="appSearchManager"
+                value="$searchquery$"|token_safe
+                timerange_earliest_time="$earlyval$"|token_safe
+                timerange_latest_time="$lateval$"|token_safe
+                earliest_time="$earlyval$"|token_safe
+                latest_time="$lateval$"|token_safe
+                default="" %}
+            {% searchcontrols 
+                id="appSearchControls" 
+                managerid="appSearchManager" %}
+        </div>
+        <div class="row">
+            <svg width="800" height="600" />
+        </div>
+        <div class="row">
+            <button id="btnSave" class="btn" type="button"><i class="icon-export"></i> Save</button>
         </div>
     </div>
 {% endblock content %}
 
 {% block js %}
     <script>
-        /*
 
         // Configure require config for bower components
         require.config({
             paths: {
-                'component': '{{STATIC_URL}}{{app_name}}/bower_components/component/lib/file'
+                'd3': '{{STATIC_URL}}{{app_name}}/bower_components/d3/d3'
             },
             shim: {
-                'component': {
+                'd3': {
                     deps: ['jquery']
                 }
             }
         });
 
         // Start with require if you need to execute some js code
-        require(['splunkjs/ready!'], function() {
-    
+        require(['backbone', 'sam/routers/router', 'splunkjs/ready!'], function(Backbone, Router) {
+            var mainRouter = new Router();
+            Backbone.history.start();
         });
-        
-        */
-        console.log("Custom JavaScript goes here!");
+
     </script>
 {% endblock js %}

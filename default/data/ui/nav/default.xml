@@ -3,7 +3,7 @@
     <view name="default" default="true"/>
     
     <!-- Standalone menus -->
-    <a href="/dj/redirector/sam/home">Home</a>
+    <a href="/dj/redirector/sam/home">New</a>
     
     <!-- Menus containing items -->
     <!--
