@@ -32,6 +32,18 @@ define(
     },
 
     initialize: function() {
+      this.clear();
+    },
+
+    clear: function() {
+      _.each(this._links, function(v) {
+        v.dispose();
+      });
+
+      _.each(this._nodes, function(v) {
+        v.dispose();
+      });
+
       this._nodes = {};
       this._links = {};
     },
@@ -42,26 +54,62 @@ define(
       this._gLines = dsvg.append("g").attr("class", "lines");
     },
 
-    addNode: function(id, settings){
-      var node = new Node(_.extend(settings, {
+    getOrAddNode: function(id) {
+      if (!this._nodes[id]) {
+        // Unknown node - let's create new one
+        this.addNode(
+          id, 
+          {
+            cx: Math.round(50 + Math.random() * (this.get('jsvg').width() - 50)), 
+            cy: Math.round(30 + Math.random() * (this.get('jsvg').height() - 80))
+          }
+        );
+      }
+
+      return this._nodes[id];
+    },
+
+    addNode: function(id, settings) {
+      this._nodes[id] = new Node(_.extend(settings, {
         gCircle: this._gCircles.append("circle"),
         id: id,
         pageWidth: this.get('jsvg').width(),
         pageHeight: this.get('jsvg').height()
       }));
-      this._nodes[id] = node;
-      this.listenTo(node, 'change:cx change:cy', this._updateLinks);
     },
 
     updateLink: function(sourceId, targetId, settings) {
       var id = sourceId + "@" + targetId;
-      var link = new Link({
-        id: id,
-        source: this._nodes[sourceId],
-        target: this._nodes[targetId],
-        gPath: this._gLines.append('path')
+      if (!this._links[id]) {
+        var link = new Link({
+          id: id,
+          source: this.getOrAddNode(sourceId),
+          target: this.getOrAddNode(targetId),
+          gPath: this._gLines.append('path')
+        });
+        this._links[id] = link;
+      }
+      this._links[id].update(settings);
+    },
+
+    save: function(nodes) {
+      _.each(this._nodes, function(v, k) {
+        nodes.push({
+          cx: v.get('cx'),
+          cy: v.get('cy'),
+          id: v.get('id')
+        });
       });
-      this._links[id] = link;
+    },
+
+    load: function(nodes) {
+      if (nodes) {
+        _.each(nodes, _.bind(function(v) {
+          if (!this._nodes[v.id]) {
+            this.addNode(v.id, v);
+          }
+        }, this));
+      }
     }
   });
 
@@ -82,6 +130,16 @@ define(
       this.listenTo(this.get('source'), 'change:cx change:cy', this._drawCurve);
       this.listenTo(this.get('target'), 'change:cx change:cy', this._drawCurve);
 
+      this._drawCurve();
+    },
+
+    dispose: function() {
+      this.stopListening(this.get('source'));
+      this.stopListening(this.get('target'));
+    },
+
+    update: function(settings) {
+      // Update background, etc
       this._drawCurve();
     },
 
@@ -107,7 +165,7 @@ define(
     },
 
     initialize: function() {
-      this.on('change:cx change:cy', this._redraw);
+      this.listenTo(this, 'change:cx change:cy', this._redraw);
 
       var gCircle = this.get('gCircle');
       gCircle
@@ -118,6 +176,10 @@ define(
         .attr("cx", this.get('cx'))
         .attr("cy", this.get('cy'))
         .call(dragBehavior);
+    },
+
+    dispose: function() {
+      this.stopListening(this);
     },
 
     move: function(dx, dy) {
@@ -179,11 +241,16 @@ define(
     },
 
     savePage: function() {
-      this.model().save({
+      var m = {
         search: this._searchBarView.val(),
         earliest_time: this._searchBarView.timerange.val().earliest_time,
-        latest_time: this._searchBarView.timerange.val().latest_time
-      });
+        latest_time: this._searchBarView.timerange.val().latest_time,
+        nodes: []
+      };
+
+      this._nodes.save(m.nodes);
+
+      this.model().save(m);
 
       return false; // To not reload the page
     },
@@ -192,6 +259,7 @@ define(
       if (arguments.length > 0) {
         if (this._model) {
           this._searchManager.stopSearch();
+          this._nodes.clear();
           this.stopListening(this._model);
         }
 
@@ -227,16 +295,12 @@ define(
     _draw: function() {
       this._jsvg.empty();
 
+      this._nodes.clear();
       this._nodes.draw();
+      this._nodes.load(this.model().get('nodes'));
 
-      this._pageWidth = this._jsvg.width();
-      this._pageHeight = this._jsvg.height();
-
-
-
-      //A LIST OF LINKS BETWEEN CIRCLES
-      var links = [
-          {
+      // Random data
+      var links = [ {
           source: 0,
           target: 5,
           strength: Math.round(Math.random() * 10)},
@@ -269,18 +333,6 @@ define(
           target: 1,
           strength: Math.round(Math.random() * 10)}
       ];
-
-      //RANDOMLY GENERATE COORDINATES FOR CIRCLES
-      var numCircles = 6;
-      d3.range(numCircles).map(_.bind(function(i) {
-        this._nodes.addNode(
-          i, 
-          {
-            cx: Math.round(50 + (i / numCircles) * (this._pageWidth - 50)), 
-            cy: Math.round(30 + Math.random() * (this._pageHeight - 80))
-          }
-        );
-      }, this));
 
       links.forEach(_.bind(function(line) {
         this._nodes.updateLink(line.source, line.target, line);
