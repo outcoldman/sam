@@ -97,9 +97,7 @@ define(
     },
 
     updateNode: function(id, settings) {
-      if (this._nodes[id]) {
-        this._nodes[id].update(settings);
-      }
+      this.getOrAddNode(id).update(settings);
     },
 
     save: function(nodes) {
