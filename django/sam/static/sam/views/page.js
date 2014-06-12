@@ -225,9 +225,45 @@ define(
       this._dsvg = d3.select('svg');
       this._jsvg = $('svg');
 
-      this._searchManager = mvc.Components.get('appSearchManager');
+      this._searchManager =  mvc.Components.get('appSearchManager');
       this._searchBarView = mvc.Components.get('appSearchBar');
-
+      // set time
+      this._searchBarView.timerange.val({
+          earliest_time: 'rt-5m',
+          latest_time: 'rt'
+      });
+      this._searchManager.startSearch();
+      var previewData = this._searchManager.data("preview", {output_mode: 'json'});
+      var links = {};
+      // handle data
+      this._maxBytesVal = 0;
+      var dataHandler = function(results, maxVal) {
+          var links = [];
+          var maxBytesVal = maxVal;
+          for (var rIndex = 0; rIndex < results.length; rIndex++) {
+        	var result = results[rIndex];
+            if (result.source && result.target && result.weight) {
+              var link = { source: result.source, target: result.target, weight: result.weight };
+              if(parseFloat(maxBytesVal) < parseFloat(result.weight)) {
+                 maxBytesVal = parseFloat(result.weight);
+              }
+              //delete result;
+              links.push(link);
+            }
+          }
+          //update weight
+          _.each(links, function(link) {
+              link.weight = parseFloat((link.weight/maxBytesVal)*10);
+          });
+          return {'links': links, 'maxBytesVal': maxBytesVal};
+      };
+      previewData.on('data',_.bind(function() {
+        if (previewData.hasData()) {
+          links = dataHandler(previewData.data().results, this._maxBytesVal);
+          this._maxBytesVal = parseFloat(links.maxBytesVal);
+          this.updateLinks(links.links);
+        }
+      }, this));
       setTimeout(_.bind(function() {
           this._searchBarView.timerange.val({
               earliest_time: 'rt-5m',
