@@ -295,6 +295,9 @@ define(
           }
         }, this))
         .call(dragBehavior);
+
+        gCircle.append("svg:title")
+          .text(function(d) { return d.id; });
     },
 
     dispose: function() {
