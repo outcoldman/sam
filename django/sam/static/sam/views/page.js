@@ -161,8 +161,6 @@ define(
 
     update: function(settings) {
       // Update background, etc
-      //this.get('gPath')
-      //  .attr('stroke', linkColor(linkColorScale(settings.weight)));
       this.set('weight', settings.weight);
       this._drawCurve();
     },
