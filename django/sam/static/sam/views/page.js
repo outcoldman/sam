@@ -87,7 +87,10 @@ define(
           id: id,
           source: this.getOrAddNode(sourceId),
           target: this.getOrAddNode(targetId),
-          gPath: this._gLines.append('path')
+          gPath: this._gLines.append('path'),
+          dsvg: this.get('dsvg'),
+          jsvg: this.get('jsvg'),
+          gLines: this._gLines
         });
         this._links[id] = link;
       }
@@ -128,7 +131,10 @@ define(
       id: null,
       source: null,
       target: null,
-      gPath: null
+      gPath: null,
+      dsvg: null,
+      jsvg: null,
+      gLines: null
     },
 
     initialize: function() {
@@ -136,12 +142,15 @@ define(
         .datum(this)
         .attr("class", "link_line")
         .attr("fill", "none")
+        .attr('stroke', '#979797')
         .attr("id", this.get('id'));
 
       this.listenTo(this.get('source'), 'change:cx change:cy', this._drawCurve);
       this.listenTo(this.get('target'), 'change:cx change:cy', this._drawCurve);
 
       this._drawCurve();
+
+      this.animate();
     },
 
     dispose: function() {
@@ -151,8 +160,9 @@ define(
 
     update: function(settings) {
       // Update background, etc
-      this.get('gPath')
-        .attr('stroke', linkColor(linkColorScale(settings.weigth)));
+      //this.get('gPath')
+      //  .attr('stroke', linkColor(linkColorScale(settings.weight)));
+      this.set('weight', settings.weight);
       this._drawCurve();
     },
 
@@ -175,6 +185,77 @@ define(
       ];
 
       this.get('gPath').attr('d', lineInterpolate(points));
+    },
+
+    animate: function() {
+      var self = this;
+
+      var a1 = this.get('gLines').append('circle');
+      var a2 = this.get('gLines').append('circle');
+      var a3 = this.get('gLines').append('circle');
+
+      var source = this.get('source');
+      var target = this.get('target');
+
+      var cx1 = source.get('cx'), cy1 = source.get('cy'),
+          cx2 = target.get('cx'), cy2 = target.get('cy');
+
+      a1.attr('r', 3)
+        .attr('class', 'data-circle')
+        .attr('cx', cx1)
+        .attr('cy', cy2);
+
+      a2.attr('r', 3)
+        .attr('class', 'data-circle')
+        .attr('cx', (cx1 + cx2) / 2)
+        .attr('cy', (cy1 + cy2) / 2);
+
+      a3.attr('r', 3)
+        .attr('class', 'data-circle')
+        .attr('cx', cx2 + (cx1 - cx2) / 4)
+        .attr('cy', cy2 + (cy1 - cy2) / 4);
+
+      var animation = { step: 0 };
+      var animationTo = { step: 1 };
+      var animationOptions = {
+        duration: 2000,
+        easing: 'easeOutCirc',
+        start: onStart,
+        progress: onProgress,
+        complete: onComplete
+      };
+
+      function onStart() {
+
+      }
+
+      function onProgress() {
+        a1.attr('cx', cx1 + (cx2 - cx1) * animation.step);
+        a1.attr('cy', cy1 + (cy2 - cy1) * animation.step);
+        a1.attr('opacity', (1 - 0.6*animation.step));
+
+        a2.attr('cx', (cx1 + cx2) / 2 + (cx2 - (cx1 + cx2) / 2) * animation.step);
+        a2.attr('cy', (cy1 + cy2) / 2 + (cy2 - (cy1 + cy2) / 2) * animation.step);
+        a2.attr('opacity', (1 - 0.6*animation.step));
+
+        a3.attr('cx', cx2 + ((cx1 - cx2) / 4) * (1 - animation.step));
+        a3.attr('cy', cy2 + ((cy1 - cy2) / 4) * (1 - animation.step));
+        a3.attr('opacity', (1 - 0.6*animation.step));
+      }
+
+      function onComplete() {
+        startAnimation();
+      }
+
+      function startAnimation() {
+        animation.step = 0;
+        a1.attr('r', self.get('weight'));
+        a2.attr('r', self.get('weight'));
+        a3.attr('r', self.get('weight'));
+        $(animation).animate(animationTo, animationOptions);
+      }
+
+      startAnimation();
     }
   });
 

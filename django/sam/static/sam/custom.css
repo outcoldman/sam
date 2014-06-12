@@ -17,7 +17,9 @@ svg circle:hover{
   cursor: pointer;
 }
 svg circle:active{
-  stroke: yellow;
 }
 svg .link_line {
+}
+svg .data-circle {
+  fill: #616161;
 }
