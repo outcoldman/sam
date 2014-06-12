@@ -197,6 +197,11 @@ define(
         .attr("r", this.get('radius'))
         .attr("cx", this.get('cx'))
         .attr("cy", this.get('cy'))
+        .on("dblclick", _.bind(function(d,i) { 
+          if (this.get('link')) {
+            window.location.href = this.get('link');
+          }
+        }, this))
         .call(dragBehavior);
     },
 

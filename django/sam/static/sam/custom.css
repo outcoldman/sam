@@ -3,8 +3,11 @@
 }
 
 svg {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAMAAACKeiw+AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////9fb3h/JDwQAAABtJREFUeNpiYMQLGBgZ8IJR6VHpUWnKpAECDACcGgA72QxfPgAAAABJRU5ErkJggg==);
+  /*background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAMAAACKeiw+AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////9fb3h/JDwQAAABtJREFUeNpiYMQLGBgZ8IJR6VHpUWnKpAECDACcGgA72QxfPgAAAABJRU5ErkJggg==);
+  */
   /* background: url(matrix.gif); */
+  background: url(world_map.png) no-repeat;
+  background-size: 100%;
   border: solid 1px #ddd;
 }
 svg .circle {
