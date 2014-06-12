@@ -161,8 +161,6 @@ define(
 
     update: function(settings) {
       // Update background, etc
-      //this.get('gPath')
-      //  .attr('stroke', linkColor(linkColorScale(settings.weight)));
       this.set('weight', settings.weight);
       this._drawCurve();
     },
@@ -198,6 +196,8 @@ define(
           cx2 = target.get('cx'), cy2 = target.get('cy');
 
       var weight = this.get('weight');
+      var path = this.get('gPath')[0][0];
+      var length = path.getTotalLength();
       var a = [];
 
       for (var i = 0; i < 10; i++) {
@@ -228,9 +228,10 @@ define(
 
       function onProgress() {
         for (var i = 0; i < a.length; i++) {
+          var p = path.getPointAtLength(length * (i / 10) * (1 - animation.step));
           a[i]
-            .attr('cx', cx2 + (cx1 - cx2) * (i / 10) * (1 - animation.step))
-            .attr('cy', cy2 + (cy1 - cy2) * (i / 10) * (1 - animation.step));
+            .attr('cx', p.x)
+            .attr('cy', p.y);
         }
       }
 
@@ -249,6 +250,7 @@ define(
         cx2 = target.get('cx'); 
         cy2 = target.get('cy');
         weight = self.get('weight');
+        length = path.getTotalLength();
 
         var w = Math.round(weight);
         if (w > 0) {
@@ -295,6 +297,9 @@ define(
           }
         }, this))
         .call(dragBehavior);
+
+        gCircle.append("svg:title")
+          .text(function(d) { return d.id; });
     },
 
     dispose: function() {

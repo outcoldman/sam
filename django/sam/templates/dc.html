@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{STATIC_URL}}{{app_name}}/custom.css" >
     <style>
         svg {
-          background: url({{STATIC_URL}}{{app_name}}/world_map.png) no-repeat;
+          background: url({{STATIC_URL}}{{app_name}}/data_center.png) no-repeat;
           background-size: 100% 100%;
         }
     </style>
@@ -27,7 +27,7 @@
 
 {% block content %}
     <div id="content">
-        <div class="row" id="searchPanel">
+        <div class="row" id="searchPanel" style="display: none">
             {% searchbar
                 id="appSearchBar" 
                 managerid="appSearchManager"
@@ -45,7 +45,7 @@
             <svg width="100%" height="600" />
         </div>
         <div class="row">
-            <button id="btnSave" class="btn" type="button"><i class="icon-export"></i> Save</button>
+            <button id="btnSave" class="btn" type="button" style="display: none"><i class="icon-export"></i> Save</button>
         </div>
     </div>
 {% endblock content %}
@@ -79,42 +79,40 @@
             var mainRouter = new Router();
             Backbone.history.start();
 
-            var links = [ {
-                  source: 0,
-                  target: 5,
-                  weight: Math.round(Math.random() * 10)},
-              {
-                  source: 0,
-                  target: 2,
-                  weight: Math.round(Math.random() * 10)},
-              {
-                  source: 1,
-                  target: 3,
-                  weight: Math.round(Math.random() * 10)},
-              {
-                  source: 2,
-                  target: 4,
-                  weight: Math.round(Math.random() * 10)},
-              {
-                  source: 3,
-                  target: 5,
-                  weight: Math.round(Math.random() * 10)},
-              {
-                  source: 5,
-                  target: 0,
-                  weight: Math.round(Math.random() * 10)},
-              {
-                  source: 2,
-                  target: 0,
-                  weight: Math.round(Math.random() * 10)},
-              {
-                  source: 3,
-                  target: 1,
-                  weight: Math.round(Math.random() * 10)},
-            {
-                  source: 2,
-                  target: 1,
-                  weight: Math.round(Math.random() * 10)}
+            var links = [ 
+                  { source: 'LB', target: 'WS1', weight: Math.round(Math.random() * 10)},
+                  { source: 'LB', target: 'WS2', weight: Math.round(Math.random() * 10)},
+                  { source: 'LB', target: 'WS3', weight: Math.round(Math.random() * 10)},
+                  { source: 'WS1', target: 'LB', weight: Math.round(Math.random() * 10)},
+                  { source: 'WS2', target: 'LB', weight: Math.round(Math.random() * 10)},
+                  { source: 'WS3', target: 'LB', weight: Math.round(Math.random() * 10)},
+
+                  { source: 'WS1', target: 'DB1', weight: Math.round(Math.random() * 10)},
+                  { source: 'WS2', target: 'DB1', weight: Math.round(Math.random() * 10)},
+                  { source: 'WS3', target: 'DB1', weight: Math.round(Math.random() * 10)},
+                  { source: 'WS1', target: 'DB2', weight: Math.round(Math.random() * 10)},
+                  { source: 'WS2', target: 'DB2', weight: Math.round(Math.random() * 10)},
+                  { source: 'WS3', target: 'DB2', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB1', target: 'WS1', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB1', target: 'WS2', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB1', target: 'WS3', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB2', target: 'WS1', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB2', target: 'WS2', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB2', target: 'WS3', weight: Math.round(Math.random() * 10)},
+
+                  { source: 'WW1', target: 'DB2', weight: Math.round(Math.random() * 10)},
+                  { source: 'WW1', target: 'DB3', weight: Math.round(Math.random() * 10)},
+                  { source: 'WW2', target: 'DB2', weight: Math.round(Math.random() * 10)},
+                  { source: 'WW2', target: 'DB3', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB2', target: 'WW1', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB3', target: 'WW1', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB2', target: 'WW2', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB3', target: 'WW2', weight: Math.round(Math.random() * 10)},
+
+                  { source: 'DB1', target: 'DB2', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB2', target: 'DB1', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB2', target: 'DB3', weight: Math.round(Math.random() * 10)},
+                  { source: 'DB3', target: 'DB2', weight: Math.round(Math.random() * 10)}
               ];
 
             setTimeout(function() {
