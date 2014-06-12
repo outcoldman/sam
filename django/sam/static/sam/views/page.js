@@ -319,8 +319,10 @@ define(
 
     _redraw: function() {
       this.get('gShape')
-        .attr("cx", this.get('cx'))
-        .attr("cy", this.get('cy'));
+        .attr("width", this.get('radius'))
+        .attr("height", this.get('radius'))
+        .attr("x", this.get('cx') - this.get('radius')/2)
+        .attr("y", this.get('cy') - this.get('radius')/2);
     }
   });
 
