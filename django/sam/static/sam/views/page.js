@@ -135,8 +135,8 @@ define(
       this.get('gPath')
         .datum(this)
         .attr("class", "link_line")
-        .attr("id", this.get('id'))
-        .attr('stroke', 'red');
+        .attr("fill", "none")
+        .attr("id", this.get('id'));
 
       this.listenTo(this.get('source'), 'change:cx change:cy', this._drawCurve);
       this.listenTo(this.get('target'), 'change:cx change:cy', this._drawCurve);
@@ -160,9 +160,18 @@ define(
       var source = this.get('source');
       var target = this.get('target');
 
+      var cx1 = source.get('cx'), cy1 = source.get('cy'),
+          cx2 = target.get('cx'), cy2 = target.get('cy');
+
+      var slopePlus90 = Math.atan2((+cy2 - cy1), (+cx2 - cx1)) + (Math.PI/2);
+
+      var cxm = (cx1 + cx2) / 2 + 10 * Math.cos(slopePlus90);
+      var cym = (cy1 + cy2) / 2 + 10 * Math.sin(slopePlus90);
+
       var points = [
-        [source.get('cx'), source.get('cy')],
-        [target.get('cx'), target.get('cy')]
+        [cx1, cy1],
+        [cxm, cym],
+        [cx2, cy2]
       ];
 
       this.get('gPath').attr('d', lineInterpolate(points));
