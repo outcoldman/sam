@@ -334,10 +334,10 @@ define(
       this._searchManager =  mvc.Components.get('appSearchManager');
       this._searchBarView = mvc.Components.get('appSearchBar');
       // set time
-      this._searchBarView.timerange.val({
+      /*this._searchBarView.timerange.val({
           earliest_time: 'rt-5m',
           latest_time: 'rt'
-      });
+      });*/
       this._searchManager.startSearch();
       var previewData = this._searchManager.data("preview", {output_mode: 'json'});
       var links = {};
