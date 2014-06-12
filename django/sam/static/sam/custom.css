@@ -11,9 +11,7 @@ svg {
   border: solid 1px #ddd;
 }
 svg .circle {
-  fill: steelblue;
-  stroke: white;
-  stroke-width: 2;
+  fill: #A6E7EF;
 }
 svg circle:hover{
   cursor: pointer;

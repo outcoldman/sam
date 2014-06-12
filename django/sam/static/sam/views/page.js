@@ -24,7 +24,7 @@ define(
   });
 
   var lineInterpolate = d3.svg.line().interpolate("basis");
-  var linkColor = d3.interpolateRgb("#BAE4B3", "#006D2C");
+  var linkColor = d3.interpolateRgb('#979797', '#333333');
   var linkColorScale = d3.scale.linear().range([0, 1]).domain([0, 10]);
 
   var Nodes = Backbone.Model.extend({
@@ -180,7 +180,7 @@ define(
 
   var Node = Backbone.Model.extend({
     defaults: {
-      radius: 30,
+      radius: 10,
       cx: 0,
       cy: 0,
       gCircle: null
