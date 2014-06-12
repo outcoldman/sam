@@ -24,7 +24,7 @@ define(
   });
 
   var lineInterpolate = d3.svg.line().interpolate("basis");
-  var linkColor = d3.interpolateRgb('#979797', '#333333');
+  var linkColor = d3.interpolateRgb('#616161', '#D9D9D9');
   var linkColorScale = d3.scale.linear().range([0, 1]).domain([0, 10]);
 
   var Nodes = Backbone.Model.extend({
@@ -219,7 +219,7 @@ define(
       var animationTo = { step: 1 };
       var animationOptions = {
         duration: 2000,
-        easing: 'easeOutCirc',
+        easing: 'easeOutSine',
         start: onStart,
         progress: onProgress,
         complete: onComplete
@@ -232,15 +232,18 @@ define(
       function onProgress() {
         a1.attr('cx', cx1 + (cx2 - cx1) * animation.step);
         a1.attr('cy', cy1 + (cy2 - cy1) * animation.step);
-        a1.attr('opacity', (1 - 0.6*animation.step));
+        //a1.attr('opacity', (1 - 0.6*animation.step));
+        a1.attr('fill', linkColor(linkColorScale(animation.step * 10)));
 
         a2.attr('cx', (cx1 + cx2) / 2 + (cx2 - (cx1 + cx2) / 2) * animation.step);
         a2.attr('cy', (cy1 + cy2) / 2 + (cy2 - (cy1 + cy2) / 2) * animation.step);
-        a2.attr('opacity', (1 - 0.6*animation.step));
+        //a2.attr('opacity', (1 - 0.6*animation.step));
+        a2.attr('fill', linkColor(linkColorScale(animation.step * 10)));
 
         a3.attr('cx', cx2 + ((cx1 - cx2) / 4) * (1 - animation.step));
         a3.attr('cy', cy2 + ((cy1 - cy2) / 4) * (1 - animation.step));
-        a3.attr('opacity', (1 - 0.6*animation.step));
+        //a3.attr('opacity', (1 - 0.6*animation.step));
+        a3.attr('fill', linkColor(linkColorScale(animation.step * 10)));
       }
 
       function onComplete() {
@@ -249,9 +252,12 @@ define(
 
       function startAnimation() {
         animation.step = 0;
-        a1.attr('r', self.get('weight'));
-        a2.attr('r', self.get('weight'));
-        a3.attr('r', self.get('weight'));
+        //a1.attr('r', self.get('weight'));
+        //a2.attr('r', self.get('weight'));
+        //a3.attr('r', self.get('weight'));
+        //a1.attr('fill', linkColor(linkColorScale(self.get('weight'))));
+        //a2.attr('fill', linkColor(linkColorScale(self.get('weight'))));
+        //a3.attr('fill', linkColor(linkColorScale(self.get('weight'))));
         $(animation).animate(animationTo, animationOptions);
       }
 
