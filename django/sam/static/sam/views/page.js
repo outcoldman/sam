@@ -118,7 +118,8 @@ define(
             this.addNode(v.id, {
               id: v.id,
               cx: v.cx * svgWidth,
-              cy: v.cy * svgHeight
+              cy: v.cy * svgHeight,
+              link: v.link
             });
           }
         }, this));
@@ -142,7 +143,7 @@ define(
         .datum(this)
         .attr("class", "link_line")
         .attr("fill", "none")
-        .attr('stroke', '#979797')
+        .attr('stroke', '#585858')
         .attr("id", this.get('id'));
 
       this.listenTo(this.get('source'), 'change:cx change:cy', this._drawCurve);
@@ -226,9 +227,6 @@ define(
       }
 
       function onProgress() {
-        
-        //a3.attr('fill', linkColor(linkColorScale(animation.step * 10)));
-
         for (var i = 0; i < a.length; i++) {
           a[i]
             .attr('cx', cx2 + (cx1 - cx2) * (i / 10) * (1 - animation.step))

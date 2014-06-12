@@ -1,0 +1,122 @@
+{% extends "splunkdj:base_with_app_bar.html" %}
+
+{% load splunkmvc %}
+
+{% block title %}USA{% endblock title %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{STATIC_URL}}{{app_name}}/custom.css" >
+    <style>
+        svg {
+          background: url({{STATIC_URL}}{{app_name}}/US_map.png) no-repeat;
+          background-size: 100% 100%;
+        }
+    </style>
+{% endblock css %}
+
+{% block managers %}
+    {% searchmanager 
+        id="appSearchManager" 
+        search="$searchquery$"|token_safe
+        earliest_time="$earlyval$"|token_safe
+        latest_time="$lateval$"|token_safe
+        preview=True 
+        required_field_list="*"
+        autostart=False %}
+{% endblock managers %}
+
+{% block content %}
+    <div id="content">
+        <div class="row" id="searchPanel" style="display: none">
+            {% searchbar
+                id="appSearchBar" 
+                managerid="appSearchManager"
+                value="$searchquery$"|token_safe
+                timerange_earliest_time="$earlyval$"|token_safe
+                timerange_latest_time="$lateval$"|token_safe
+                earliest_time="$earlyval$"|token_safe
+                latest_time="$lateval$"|token_safe
+                default="" %}
+            {% searchcontrols 
+                id="appSearchControls" 
+                managerid="appSearchManager" %}
+        </div>
+        <div class="row">
+            <svg width="100%" height="600" />
+        </div>
+        <div class="row">
+            <button id="btnSave" class="btn" type="button" style="display: none"><i class="icon-export"></i> Save</button>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js %}
+    <script>
+
+        // Configure require config for bower components
+        require.config({
+            paths: {
+                'd3': '{{STATIC_URL}}{{app_name}}/bower_components/d3/d3',
+                'jquery-easing': '{{STATIC_URL}}{{app_name}}/bower_components/jquery.easing/js/jquery.easing'
+            },
+            shim: {
+                'd3': {
+                  deps: ['jquery']
+                },
+                'jquery.easing': {
+                  deps: ['jquery']
+                }
+            }
+        });
+
+        // Start with require if you need to execute some js code
+        require([
+            'backbone',
+            'underscore',
+            'sam/routers/router',
+            'splunkjs/ready!',
+            'jquery-easing'], function(Backbone, _, Router) {
+            var mainRouter = new Router();
+            Backbone.history.start();
+
+            var links = [ 
+                  { source: 'TX', target: 'NY', weight: Math.round(Math.random() * 10)},
+                  { source: 'TX', target: 'CA', weight: Math.round(Math.random() * 10)},
+                  { source: 'TX', target: 'WA', weight: Math.round(Math.random() * 10)},
+                  { source: 'TX', target: 'CO', weight: Math.round(Math.random() * 10)},
+
+                  { source: 'NY', target: 'TX', weight: Math.round(Math.random() * 10)},
+                  { source: 'NY', target: 'CA', weight: Math.round(Math.random() * 10)},
+                  { source: 'NY', target: 'WA', weight: Math.round(Math.random() * 10)},
+                  { source: 'NY', target: 'CO', weight: Math.round(Math.random() * 10)},
+
+                  { source: 'WA', target: 'NY', weight: Math.round(Math.random() * 10)},
+                  { source: 'WA', target: 'CA', weight: Math.round(Math.random() * 10)},
+                  { source: 'WA', target: 'TX', weight: Math.round(Math.random() * 10)},
+                  { source: 'WA', target: 'CO', weight: Math.round(Math.random() * 10)},
+
+                  { source: 'CA', target: 'NY', weight: Math.round(Math.random() * 10)},
+                  { source: 'CA', target: 'TX', weight: Math.round(Math.random() * 10)},
+                  { source: 'CA', target: 'WA', weight: Math.round(Math.random() * 10)},
+                  { source: 'CA', target: 'CO', weight: Math.round(Math.random() * 10)},
+
+                  { source: 'CO', target: 'NY', weight: Math.round(Math.random() * 10)},
+                  { source: 'CO', target: 'TX', weight: Math.round(Math.random() * 10)},
+                  { source: 'CO', target: 'WA', weight: Math.round(Math.random() * 10)},
+                  { source: 'CO', target: 'CA', weight: Math.round(Math.random() * 10)}
+              ];
+
+            setTimeout(function() {
+                setInterval(function() {
+                    _.each(links, function(l) {
+                        l.weight = Math.round(Math.random() * 10);
+                    });
+
+                    mainRouter.pageView().updateLinks(links);
+                }, 500);
+            }, 2000);
+            
+        });
+
+    </script>
+{% endblock js %}
