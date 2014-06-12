@@ -115,13 +115,31 @@
                   { source: 'DB3', target: 'DB2', weight: Math.round(Math.random() * 10)}
               ];
 
+            var nodes = [
+              { id: 'LB', active: 1 },
+              { id: 'WS1', active: 1 },
+              { id: 'WS2', active: 1 },
+              { id: 'WS3', active: 1 },
+              { id: 'DB1', active: 1 },
+              { id: 'DB2', active: 1 },
+              { id: 'DB3', active: 1 },
+              { id: 'WW1', active: 1 },
+              { id: 'WW2', active: 1 },
+              { id: 'WW3', active: 1 }
+            ];
+
             setTimeout(function() {
                 setInterval(function() {
                     _.each(links, function(l) {
                         l.weight = Math.round(Math.random() * 10);
                     });
 
+                    _.each(nodes, function(n) {
+                      n.active = Math.random();
+                    })
+
                     mainRouter.pageView().updateLinks(links);
+                    mainRouter.pageView().updateNodes(nodes);
                 }, 500);
             }, 2000);
             

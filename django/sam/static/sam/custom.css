@@ -7,7 +7,6 @@ svg {
   border: solid 1px #ddd;
 }
 svg .circle, svg .rect {
-  fill: #A6E7EF;
 }
 svg circle:hover, rect:hover{
   cursor: pointer;

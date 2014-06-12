@@ -24,8 +24,7 @@ define(
   });
 
   var lineInterpolate = d3.svg.line().interpolate("basis");
-  var linkColor = d3.interpolateRgb('#616161', '#D9D9D9');
-  var linkColorScale = d3.scale.linear().range([0, 1]).domain([0, 10]);
+  var shapeColor = d3.interpolateRgb('#4F5E61', '#A6E7EF');
 
   var Nodes = Backbone.Model.extend({
     defaults: {
@@ -97,6 +96,12 @@ define(
       this._links[id].update(settings);
     },
 
+    updateNode: function(id, settings) {
+      if (this._nodes[id]) {
+        this._nodes[id].update(settings);
+      }
+    },
+
     save: function(nodes) {
       var svgWidth = this.get('jsvg').width();
       var svgHeight = this.get('jsvg').height();
@@ -104,7 +109,8 @@ define(
         nodes.push({
           cx: v.get('cx')/svgWidth,
           cy: v.get('cy')/svgHeight,
-          id: v.get('id')
+          id: v.get('id'),
+          link: v.get('link')
         });
       });
     },
@@ -288,7 +294,7 @@ define(
         .datum(this)
         .attr("class", "rect")
         .attr("id", this.get('id'))
-        //.attr("r", this.get('radius'))
+        .attr("fill", shapeColor(1))
         .attr("width", this.get('radius'))
         .attr("height", this.get('radius'))
         .attr("x", this.get('cx') - this.get('radius')/2)
@@ -315,6 +321,11 @@ define(
         cx: Math.max(this.get('radius'), Math.min(this.get('pageWidth') - this.get('radius'), + x + dx)),
         cy: Math.max(this.get('radius'), Math.min(this.get('pageHeight') - this.get('radius'), + y + dy))
       });
+    },
+
+    update: function(settings) {
+      var gShape = this.get('gShape');
+      gShape.attr('fill', shapeColor(settings.active));
     },
 
     _redraw: function() {
@@ -408,6 +419,12 @@ define(
     updateLinks: function(links) {
       _.each(links, _.bind(function(l) {
         this._nodes.updateLink(l.source, l.target, l);
+      }, this));
+    },
+
+    updateNodes: function(nodes) {
+      _.each(nodes, _.bind(function(n) {
+        this._nodes.updateNode(n.id, n);
       }, this));
     },
 
