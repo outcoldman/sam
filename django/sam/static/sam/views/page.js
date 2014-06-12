@@ -52,7 +52,7 @@ define(
 
     draw: function() {
       var dsvg = this.get('dsvg');
-      this._gCircles = dsvg.append("g").attr("class", "circles");
+      this._gShapes = dsvg.append("g").attr("class", "shapes");
       this._gLines = dsvg.append("g").attr("class", "lines");
     },
 
@@ -73,7 +73,7 @@ define(
 
     addNode: function(id, settings) {
       this._nodes[id] = new Node(_.extend(settings, {
-        gCircle: this._gCircles.append("circle"),
+        gShape: this._gShapes.append("rect"),
         id: id,
         pageWidth: this.get('jsvg').width(),
         pageHeight: this.get('jsvg').height()
@@ -274,23 +274,25 @@ define(
 
   var Node = Backbone.Model.extend({
     defaults: {
-      radius: 10,
+      radius: 20,
       cx: 0,
       cy: 0,
-      gCircle: null
+      gShape: null
     },
 
     initialize: function() {
       this.listenTo(this, 'change:cx change:cy', this._redraw);
 
-      var gCircle = this.get('gCircle');
-      gCircle
+      var gShape = this.get('gShape');
+      gShape
         .datum(this)
-        .attr("class", "circle")
+        .attr("class", "rect")
         .attr("id", this.get('id'))
-        .attr("r", this.get('radius'))
-        .attr("cx", this.get('cx'))
-        .attr("cy", this.get('cy'))
+        //.attr("r", this.get('radius'))
+        .attr("width", this.get('radius'))
+        .attr("height", this.get('radius'))
+        .attr("x", this.get('cx') - this.get('radius')/2)
+        .attr("y", this.get('cy') - this.get('radius')/2)
         .on("dblclick", _.bind(function(d,i) { 
           if (this.get('link')) {
             window.location.href = this.get('link');
@@ -298,7 +300,7 @@ define(
         }, this))
         .call(dragBehavior);
 
-        gCircle.append("svg:title")
+        gShape.append("svg:title")
           .text(function(d) { return d.id; });
     },
 
@@ -316,7 +318,7 @@ define(
     },
 
     _redraw: function() {
-      this.get('gCircle')
+      this.get('gShape')
         .attr("cx", this.get('cx'))
         .attr("cy", this.get('cy'));
     }
