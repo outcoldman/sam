@@ -252,6 +252,10 @@ define(
 
       function startAnimation() {
         animation.step = 0;
+        cx1 = source.get('cx');
+        cy1 = source.get('cy');
+        cx2 = target.get('cx'); 
+        cy2 = target.get('cy');
         //a1.attr('r', self.get('weight'));
         //a2.attr('r', self.get('weight'));
         //a3.attr('r', self.get('weight'));
