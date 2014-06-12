@@ -7,7 +7,7 @@ svg {
   */
   /* background: url(matrix.gif); */
   background: url(world_map.png) no-repeat;
-  background-size: 100%;
+  background-size: 100% 100%;
   border: solid 1px #ddd;
 }
 svg .circle {
@@ -21,5 +21,5 @@ svg circle:active{
 svg .link_line {
 }
 svg .data-circle {
-  
+
 }

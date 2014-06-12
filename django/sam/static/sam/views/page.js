@@ -190,30 +190,26 @@ define(
     animate: function() {
       var self = this;
 
-      var a1 = this.get('gLines').append('circle');
-      var a2 = this.get('gLines').append('circle');
-      var a3 = this.get('gLines').append('circle');
-
       var source = this.get('source');
       var target = this.get('target');
 
       var cx1 = source.get('cx'), cy1 = source.get('cy'),
           cx2 = target.get('cx'), cy2 = target.get('cy');
 
-      a1.attr('r', 3)
-        .attr('class', 'data-circle')
-        .attr('cx', cx1)
-        .attr('cy', cy2);
+      var weight = this.get('weight');
+      var a = [];
 
-      a2.attr('r', 3)
-        .attr('class', 'data-circle')
-        .attr('cx', (cx1 + cx2) / 2)
-        .attr('cy', (cy1 + cy2) / 2);
-
-      a3.attr('r', 3)
-        .attr('class', 'data-circle')
-        .attr('cx', cx2 + (cx1 - cx2) / 4)
-        .attr('cy', cy2 + (cy1 - cy2) / 4);
+      for (var i = 0; i < 10; i++) {
+        var aa = this.get('gLines')
+          .append('circle')
+          .attr('r', 3)
+          .attr('class', 'data-circle')
+          .attr('cx', cx1)
+          .attr('cy', cy2)
+          .attr('fill', '#616161')
+          .attr('opacity', 0);
+        a.push(aa);
+      }
 
       var animation = { step: 0 };
       var animationTo = { step: 1 };
@@ -230,23 +226,21 @@ define(
       }
 
       function onProgress() {
-        a1.attr('cx', cx1 + (cx2 - cx1) * animation.step);
-        a1.attr('cy', cy1 + (cy2 - cy1) * animation.step);
-        //a1.attr('opacity', (1 - 0.6*animation.step));
-        a1.attr('fill', linkColor(linkColorScale(animation.step * 10)));
+        
+        //a3.attr('fill', linkColor(linkColorScale(animation.step * 10)));
 
-        a2.attr('cx', (cx1 + cx2) / 2 + (cx2 - (cx1 + cx2) / 2) * animation.step);
-        a2.attr('cy', (cy1 + cy2) / 2 + (cy2 - (cy1 + cy2) / 2) * animation.step);
-        //a2.attr('opacity', (1 - 0.6*animation.step));
-        a2.attr('fill', linkColor(linkColorScale(animation.step * 10)));
-
-        a3.attr('cx', cx2 + ((cx1 - cx2) / 4) * (1 - animation.step));
-        a3.attr('cy', cy2 + ((cy1 - cy2) / 4) * (1 - animation.step));
-        //a3.attr('opacity', (1 - 0.6*animation.step));
-        a3.attr('fill', linkColor(linkColorScale(animation.step * 10)));
+        for (var i = 0; i < a.length; i++) {
+          a[i]
+            .attr('cx', cx2 + (cx1 - cx2) * (i / 10) * (1 - animation.step))
+            .attr('cy', cy2 + (cy1 - cy2) * (i / 10) * (1 - animation.step));
+        }
       }
 
       function onComplete() {
+        for (var i = 0; i < a.length; i++) {
+          a[i]
+            .attr('opacity', 0);
+        }
         startAnimation();
       }
 
@@ -256,12 +250,21 @@ define(
         cy1 = source.get('cy');
         cx2 = target.get('cx'); 
         cy2 = target.get('cy');
-        //a1.attr('r', self.get('weight'));
-        //a2.attr('r', self.get('weight'));
-        //a3.attr('r', self.get('weight'));
-        //a1.attr('fill', linkColor(linkColorScale(self.get('weight'))));
-        //a2.attr('fill', linkColor(linkColorScale(self.get('weight'))));
-        //a3.attr('fill', linkColor(linkColorScale(self.get('weight'))));
+        weight = self.get('weight');
+
+        var w = Math.round(weight);
+        if (w > 0) {
+          var d = (10 / w);
+          for (var i = 0; i < a.length; i++) {
+            if (i % d === 0) {
+              a[i]
+                .attr('opacity', 1)
+                .attr('cx', cx2 + (cx1 - cx2) * (i / 10))
+                .attr('cy', cy2 + (cy1 - cy2) * (i / 10));
+            }
+          }
+        }
+
         $(animation).animate(animationTo, animationOptions);
       }
 
