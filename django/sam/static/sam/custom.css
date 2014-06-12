@@ -4,19 +4,18 @@
 
 svg {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAMAAACKeiw+AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////9fb3h/JDwQAAABtJREFUeNpiYMQLGBgZ8IJR6VHpUWnKpAECDACcGgA72QxfPgAAAABJRU5ErkJggg==);
-  /* background: url(matrix.gif); */
   border: solid 1px #ddd;
 }
 svg .circle {
-  fill: steelblue;
-  stroke: white;
-  stroke-width: 2;
+  fill: #A6E7EF;
 }
 svg circle:hover{
   cursor: pointer;
 }
 svg circle:active{
-  stroke: yellow;
 }
 svg .link_line {
+}
+svg .data-circle {
+
 }

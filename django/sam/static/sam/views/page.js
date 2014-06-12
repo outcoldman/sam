@@ -24,7 +24,7 @@ define(
   });
 
   var lineInterpolate = d3.svg.line().interpolate("basis");
-  var linkColor = d3.interpolateRgb("#BAE4B3", "#006D2C");
+  var linkColor = d3.interpolateRgb('#616161', '#D9D9D9');
   var linkColorScale = d3.scale.linear().range([0, 1]).domain([0, 10]);
 
   var Nodes = Backbone.Model.extend({
@@ -87,7 +87,10 @@ define(
           id: id,
           source: this.getOrAddNode(sourceId),
           target: this.getOrAddNode(targetId),
-          gPath: this._gLines.append('path')
+          gPath: this._gLines.append('path'),
+          dsvg: this.get('dsvg'),
+          jsvg: this.get('jsvg'),
+          gLines: this._gLines
         });
         this._links[id] = link;
       }
@@ -115,7 +118,8 @@ define(
             this.addNode(v.id, {
               id: v.id,
               cx: v.cx * svgWidth,
-              cy: v.cy * svgHeight
+              cy: v.cy * svgHeight,
+              link: v.link
             });
           }
         }, this));
@@ -128,20 +132,26 @@ define(
       id: null,
       source: null,
       target: null,
-      gPath: null
+      gPath: null,
+      dsvg: null,
+      jsvg: null,
+      gLines: null
     },
 
     initialize: function() {
       this.get('gPath')
         .datum(this)
         .attr("class", "link_line")
-        .attr("id", this.get('id'))
-        .attr('stroke', 'red');
+        .attr("fill", "none")
+        .attr('stroke', '#585858')
+        .attr("id", this.get('id'));
 
       this.listenTo(this.get('source'), 'change:cx change:cy', this._drawCurve);
       this.listenTo(this.get('target'), 'change:cx change:cy', this._drawCurve);
 
       this._drawCurve();
+
+      this.animate();
     },
 
     dispose: function() {
@@ -151,8 +161,9 @@ define(
 
     update: function(settings) {
       // Update background, etc
-      this.get('gPath')
-        .attr('stroke', linkColor(linkColorScale(settings.weigth)));
+      //this.get('gPath')
+      //  .attr('stroke', linkColor(linkColorScale(settings.weight)));
+      this.set('weight', settings.weight);
       this._drawCurve();
     },
 
@@ -160,18 +171,108 @@ define(
       var source = this.get('source');
       var target = this.get('target');
 
+      var cx1 = source.get('cx'), cy1 = source.get('cy'),
+          cx2 = target.get('cx'), cy2 = target.get('cy');
+
+      var slopePlus90 = Math.atan2((+cy2 - cy1), (+cx2 - cx1)) + (Math.PI/2);
+
+      var cxm = (cx1 + cx2) / 2 + 10 * Math.cos(slopePlus90);
+      var cym = (cy1 + cy2) / 2 + 10 * Math.sin(slopePlus90);
+
       var points = [
-        [source.get('cx'), source.get('cy')],
-        [target.get('cx'), target.get('cy')]
+        [cx1, cy1],
+        [cxm, cym],
+        [cx2, cy2]
       ];
 
       this.get('gPath').attr('d', lineInterpolate(points));
+    },
+
+    animate: function() {
+      var self = this;
+
+      var source = this.get('source');
+      var target = this.get('target');
+
+      var cx1 = source.get('cx'), cy1 = source.get('cy'),
+          cx2 = target.get('cx'), cy2 = target.get('cy');
+
+      var weight = this.get('weight');
+      var a = [];
+
+      for (var i = 0; i < 10; i++) {
+        var aa = this.get('gLines')
+          .append('circle')
+          .attr('r', 3)
+          .attr('class', 'data-circle')
+          .attr('cx', cx1)
+          .attr('cy', cy2)
+          .attr('fill', '#616161')
+          .attr('opacity', 0);
+        a.push(aa);
+      }
+
+      var animation = { step: 0 };
+      var animationTo = { step: 1 };
+      var animationOptions = {
+        duration: 2000,
+        easing: 'easeOutSine',
+        start: onStart,
+        progress: onProgress,
+        complete: onComplete
+      };
+
+      function onStart() {
+
+      }
+
+      function onProgress() {
+        for (var i = 0; i < a.length; i++) {
+          a[i]
+            .attr('cx', cx2 + (cx1 - cx2) * (i / 10) * (1 - animation.step))
+            .attr('cy', cy2 + (cy1 - cy2) * (i / 10) * (1 - animation.step));
+        }
+      }
+
+      function onComplete() {
+        for (var i = 0; i < a.length; i++) {
+          a[i]
+            .attr('opacity', 0);
+        }
+        startAnimation();
+      }
+
+      function startAnimation() {
+        animation.step = 0;
+        cx1 = source.get('cx');
+        cy1 = source.get('cy');
+        cx2 = target.get('cx'); 
+        cy2 = target.get('cy');
+        weight = self.get('weight');
+
+        var w = Math.round(weight);
+        if (w > 0) {
+          var d = (10 / w);
+          for (var i = 0; i < a.length; i++) {
+            if (i % d === 0) {
+              a[i]
+                .attr('opacity', 1)
+                .attr('cx', cx2 + (cx1 - cx2) * (i / 10))
+                .attr('cy', cy2 + (cy1 - cy2) * (i / 10));
+            }
+          }
+        }
+
+        $(animation).animate(animationTo, animationOptions);
+      }
+
+      startAnimation();
     }
   });
 
   var Node = Backbone.Model.extend({
     defaults: {
-      radius: 30,
+      radius: 10,
       cx: 0,
       cy: 0,
       gCircle: null
@@ -188,6 +289,11 @@ define(
         .attr("r", this.get('radius'))
         .attr("cx", this.get('cx'))
         .attr("cy", this.get('cy'))
+        .on("dblclick", _.bind(function(d,i) { 
+          if (this.get('link')) {
+            window.location.href = this.get('link');
+          }
+        }, this))
         .call(dragBehavior);
     },
 

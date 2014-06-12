@@ -2,10 +2,16 @@
 
 {% load splunkmvc %}
 
-{% block title %}Home Page{% endblock title %}
+{% block title %}You are in Matrix{% endblock title %}
 
 {% block css %}
     <link rel="stylesheet" href="{{STATIC_URL}}{{app_name}}/custom.css" >
+    <style>
+        svg {
+          background: url({{STATIC_URL}}{{app_name}}/matrix.gif) no-repeat;
+          background-size: 100% 100%;
+        }
+    </style>
 {% endblock css %}
 
 {% block managers %}
@@ -30,8 +36,7 @@
                 timerange_latest_time="$lateval$"|token_safe
                 earliest_time="$earlyval$"|token_safe
                 latest_time="$lateval$"|token_safe
-                default='source=stream | eval source_addr=src_ip + ":" + src_port | eval destination_addr = dest_ip + ":" + dest_port | eval uni_id=source_addr+","+ destination_addr    | dedup source_addr destination_addr  | spath timestamp | eval tsl=len(timestamp) | eval timestamp=substr(timestamp, 0, tsl-1) + "GMT" | eval _time=strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%6N%Z") | bin _time span=1sec | rename _raw AS orig_raw |  stats sum(bytes) AS total_bytes sum(bytes_in) AS total_bytes_in sum(bytes_out) AS total_bytes_out by src_ip dest_ip | rename src_ip as source dest_ip as target total_bytes as weight'
-            %}
+                default="" %}
             {% searchcontrols 
                 id="appSearchControls" 
                 managerid="appSearchManager" %}
@@ -73,7 +78,7 @@
             'jquery-easing'], function(Backbone, _, Router) {
             var mainRouter = new Router();
             Backbone.history.start();
-/*
+
             var links = [ {
                   source: 0,
                   target: 5,
@@ -120,7 +125,7 @@
 
                     mainRouter.pageView().updateLinks(links);
                 }, 500);
-            }, 2000);*/
+            }, 2000);
             
         });
 
